@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -8,11 +8,80 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-//VANEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEK!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
 namespace Aphin
 {
     public partial class Form1 : Form
     {
+        public class Matrix
+        {
+            private int[,] matr;
+
+            public int m;
+            public int n;
+
+            public Matrix(int m, int n)
+            {
+                this.m = m;
+                this.n = n;
+                this.matr = new int[m, n]; 
+            }
+
+            public Matrix(int m, int n, int x1, int y1, int h)
+            {
+                this.m = m;
+                this.n = n;
+                this.matr = new int[m, n];
+                matr[0, 0] = x1;
+                matr[0, 1] = y1;
+                matr[0, 2] = h;
+            }
+
+            public int this[int x, int y]
+            {
+                get
+                {
+                    return this.matr[x, y];
+                }
+                set
+                {
+                    this.matr[x, y] = value;
+                }
+            }
+
+            public static Matrix operator *(Matrix matrix, int value)
+            {
+                var result = new Matrix(matrix.m, matrix.n);
+                for(int i = 0; i < matrix.m; i++)
+                {
+                    for (int j = 0; j < matrix.n; i++)
+                        result[i, j] = matrix[i, j] * value;
+                }
+                return result;
+            }
+            public static Matrix operator *(Matrix matrix, Matrix matrix2)
+            {
+                if (matrix.n != matrix2.m)
+                {
+                    throw new ArgumentException("It's not be multiplied");
+                }
+                var result = new Matrix(matrix.m, matrix2.n);
+                for (var i = 0; i < matrix.m; i++)
+                {
+                    for (var j = 0; j < matrix2.n; j++)
+                    {
+                        result[i, j] = 0;
+
+                        for (var k = 0; k < matrix.n; k++)
+                        {
+                            result[i, j] += matrix[i, k] * matrix2[k, j];
+                        }
+                    }
+                }
+
+                return result;
+            }
+        }
         public Form1()
         {
             InitializeComponent();
@@ -62,7 +131,7 @@ namespace Aphin
                     if (radioButton2.Checked)
                     Draw_square(X0, Y0, X1, Y1);
             }
-            
+
         }
 
         private void pictureBox1_MouseUp(object sender, MouseEventArgs e)
@@ -158,10 +227,28 @@ namespace Aphin
             g.Clear(Color.White);
             int dx = int.Parse(textBox1.Text);
             int dy = int.Parse(textBox2.Text);
-            X0 -= dx;
-            X1 -= dx;
-            Y0 -= dy;
-            Y1 -= dy;
+
+            Matrix matr = new Matrix(1, 3, X0, Y0, 1);
+
+            Matrix matr2 = new Matrix(1, 3, X1, Y1, 1);
+
+            Matrix offset = new Matrix(3, 3);
+            offset[0, 0] = 1; offset[0, 1] = 0; offset[0, 2] = 0; offset[1, 0] = 0; offset[1, 1] = 1; offset[1, 2] = 0; offset[2, 0] = dx; offset[2, 1] = dy; offset[2, 2] = 1;
+
+            var res1 = matr * offset;
+            var res2 = matr2 * offset;
+            if (!(res1[0, 0] > pictureBox1.Width - 1 || res1[0, 0] < 1 || res2[0, 0] > pictureBox1.Width - 1 || res2[0, 0] < 1 || res1[0, 1] > pictureBox1.Height - 1 || res1[0, 1] < 1 || res2[0, 1] > pictureBox1.Height - 1 || res2[0, 1] < 1))
+            {
+                X0 = res1[0, 0];
+                X1 = res2[0, 0];
+                Y0 = res1[0, 1];
+                Y1 = res2[0, 1];
+                
+                X1 = Math.Min(pictureBox1.Width - 1, Math.Max(X1, 1));
+                Y1 = Math.Min(pictureBox1.Height - 1, Math.Max(Y1, 1));
+                X0 = Math.Min(pictureBox1.Width - 1, Math.Max(X0, 1));
+                Y0 = Math.Min(pictureBox1.Height - 1, Math.Max(Y0, 1));
+            }
 
             if (radioButton1.Checked)
                 Line_Bres(X0, Y0, X1, Y1);
@@ -173,15 +260,19 @@ namespace Aphin
         private void textBox1_KeyPress(object sender, KeyPressEventArgs e)
         {
             char number = e.KeyChar;
-            if (!Char.IsDigit(number))
+            if (!(Char.IsDigit(number) || number == '-' || char.IsControl(number)))
                 e.Handled = true;
         }
-
         private void textBox2_KeyPress(object sender, KeyPressEventArgs e)
         {
             char number = e.KeyChar;
-            if (!Char.IsDigit(number))
+            if (!(Char.IsDigit(number) || number == '-' || char.IsControl(number)))
                 e.Handled = true;
         }
+
+        //public void Offset()
+        //{
+
+        //}
     }
 }
