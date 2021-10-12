@@ -50,20 +50,28 @@ namespace Aphin
         private void pictureBox1_MouseMove(object sender, MouseEventArgs e)
         {
             g.Clear(Color.White);
-            this.X1 = Math.Min(pictureBox1.Width - 1, Math.Max(e.X, 1));
-            this.Y1 = Math.Min(pictureBox1.Height - 1, Math.Max(e.Y, 1));
-            if (mouse_Down && radioButton1.Checked)
-                Line_Bres(X0, Y0, X1,Y1);
-            else
-                if (mouse_Down && radioButton2.Checked)
-                Draw_square(X0, Y0, X1, Y1);
+            if (mouse_Down)
+            {
+                this.X1 = Math.Min(pictureBox1.Width - 1, Math.Max(e.X, 1));
+                this.Y1 = Math.Min(pictureBox1.Height - 1, Math.Max(e.Y, 1));
 
+                if (radioButton1.Checked)
+                    Line_Bres(X0, Y0, X1, Y1);
+                else
+                    if (radioButton2.Checked)
+                    Draw_square(X0, Y0, X1, Y1);
+            }
+            
         }
 
         private void pictureBox1_MouseUp(object sender, MouseEventArgs e)
         {
             mouse_Down = false;
-
+            if (mouse_Down && radioButton1.Checked)
+                Line_Bres(X0, Y0, X1, Y1);
+            else
+                if (mouse_Down && radioButton2.Checked)
+                Draw_square(X0, Y0, X1, Y1);
         }
 
         static void Swap(ref int x, ref int y)
@@ -149,11 +157,11 @@ namespace Aphin
             g.Clear(Color.White);
             int dx = int.Parse(textBox1.Text);
             int dy = int.Parse(textBox2.Text);
-            //MessageBox.Show(dx + " " + dy);
-            //X0 = Math.Min(pictureBox1.Width - 1, Math.Max(X0-dx, 1));
-            //X1 = Math.Min(pictureBox1.Width - 1, Math.Max(X1-dx, 1)); 
-            //Y0 = Math.Min(pictureBox1.Height - 1, Math.Max(Y1-dy, 1)); 
-            //Y1 = Math.Min(pictureBox1.Height - 1, Math.Max(Y1-dy, 1));
+            X0 -= dx;
+            X1 -= dx;
+            Y0 -= dy;
+            Y1 -= dy;
+
             if (radioButton1.Checked)
                 Line_Bres(X0, Y0, X1, Y1);
             else
