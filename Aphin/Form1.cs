@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -15,7 +15,7 @@ namespace Aphin
     {
         public class Matrix
         {
-            private int[,] matr;
+            private double[,] matr;
 
             public int m;
             public int n;
@@ -24,20 +24,20 @@ namespace Aphin
             {
                 this.m = m;
                 this.n = n;
-                this.matr = new int[m, n];
+                this.matr = new double[m, n];
             }
 
-            public Matrix(int m, int n, int x1, int y1, int h)
+            public Matrix(int m, int n, double x1, double y1, double h)
             {
                 this.m = m;
                 this.n = n;
-                this.matr = new int[m, n];
+                this.matr = new double[m, n];
                 matr[0, 0] = x1;
                 matr[0, 1] = y1;
                 matr[0, 2] = h;
             }
 
-            public int this[int x, int y]
+            public double this[int x, int y]
             {
                 get
                 {
@@ -119,11 +119,11 @@ namespace Aphin
 
         private void pictureBox1_MouseMove(object sender, MouseEventArgs e)
         {
-            
+
             if (mouse_Down)
             {
-                if(!radioButton3.Checked)
-                g.Clear(Color.White);
+                if (!radioButton3.Checked)
+                    g.Clear(Color.White);
                 this.X1 = Math.Min(pictureBox1.Width - 1, Math.Max(e.X, 1));
                 this.Y1 = Math.Min(pictureBox1.Height - 1, Math.Max(e.Y, 1));
 
@@ -234,6 +234,8 @@ namespace Aphin
 
             Matrix matr2 = new Matrix(1, 3, X1, Y1, 1);
 
+            
+
             Matrix offset = new Matrix(3, 3);
             offset[0, 0] = 1; offset[0, 1] = 0; offset[0, 2] = 0; offset[1, 0] = 0; offset[1, 1] = 1; offset[1, 2] = 0; offset[2, 0] = dx; offset[2, 1] = dy; offset[2, 2] = 1;
 
@@ -241,10 +243,10 @@ namespace Aphin
             var res2 = matr2 * offset;
             if (!(res1[0, 0] > pictureBox1.Width - 1 || res1[0, 0] < 1 || res2[0, 0] > pictureBox1.Width - 1 || res2[0, 0] < 1 || res1[0, 1] > pictureBox1.Height - 1 || res1[0, 1] < 1 || res2[0, 1] > pictureBox1.Height - 1 || res2[0, 1] < 1))
             {
-                X0 = res1[0, 0];
-                X1 = res2[0, 0];
-                Y0 = res1[0, 1];
-                Y1 = res2[0, 1];
+                X0 = (int)res1[0, 0];
+                X1 = (int)res2[0, 0];
+                Y0 = (int)res1[0, 1];
+                Y1 = (int)res2[0, 1];
 
                 X1 = Math.Min(pictureBox1.Width - 1, Math.Max(X1, 1));
                 Y1 = Math.Min(pictureBox1.Height - 1, Math.Max(Y1, 1));
@@ -281,7 +283,39 @@ namespace Aphin
 
         private void button3_Click(object sender, EventArgs e)
         {
+            g.Clear(Color.White);
+            int grad = int.Parse(textBox3.Text);
+            double rad = grad * Math.PI / 180.0;
 
+            Matrix matr = new Matrix(1, 3, X0, Y0, 1);
+            Matrix matr2 = new Matrix(1, 3, X1, Y1, 1);
+
+            int x_centr = X1 - (X1 - X0) / 2;
+            int y_centr = Y1 - (Y1 - Y0) / 2;
+
+            Matrix offset = new Matrix(3, 3);
+            offset[0, 0] = Math.Cos(rad); offset[0, 1] = Math.Sin(rad); offset[0, 2] = 0; offset[1, 0] = -Math.Sin(rad); offset[1, 1] = Math.Cos(rad); offset[1, 2] = 0; offset[2, 0] = -x_centr * Math.Cos(rad) + y_centr * Math.Sin(rad) + x_centr; offset[2, 1] = -x_centr * Math.Sin(rad) - y_centr * Math.Cos(rad) + y_centr; offset[2, 2] = 1;
+
+            var res1 = matr * offset;
+            var res2 = matr2 * offset;
+            if (!(res1[0, 0] > pictureBox1.Width - 1 || res1[0, 0] < 1 || res2[0, 0] > pictureBox1.Width - 1 || res2[0, 0] < 1 || res1[0, 1] > pictureBox1.Height - 1 || res1[0, 1] < 1 || res2[0, 1] > pictureBox1.Height - 1 || res2[0, 1] < 1))
+            {
+                X0 = (int)res1[0, 0];
+                X1 = (int)res2[0, 0];
+                Y0 = (int)res1[0, 1];
+                Y1 = (int)res2[0, 1];
+
+                X1 = Math.Min(pictureBox1.Width - 1, Math.Max(X1, 1));
+                Y1 = Math.Min(pictureBox1.Height - 1, Math.Max(Y1, 1));
+                X0 = Math.Min(pictureBox1.Width - 1, Math.Max(X0, 1));
+                Y0 = Math.Min(pictureBox1.Height - 1, Math.Max(Y0, 1));
+            }
+
+            if (radioButton1.Checked)
+                Line_Bres(X0, Y0, X1, Y1);
+            else
+               if (radioButton2.Checked)
+                Draw_square(X0, Y0, X1, Y1);
         }
     }
 }
