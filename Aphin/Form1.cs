@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -24,7 +24,7 @@ namespace Aphin
             {
                 this.m = m;
                 this.n = n;
-                this.matr = new int[m, n]; 
+                this.matr = new int[m, n];
             }
 
             public Matrix(int m, int n, int x1, int y1, int h)
@@ -52,7 +52,7 @@ namespace Aphin
             public static Matrix operator *(Matrix matrix, int value)
             {
                 var result = new Matrix(matrix.m, matrix.n);
-                for(int i = 0; i < matrix.m; i++)
+                for (int i = 0; i < matrix.m; i++)
                 {
                     for (int j = 0; j < matrix.n; i++)
                         result[i, j] = matrix[i, j] * value;
@@ -119,9 +119,11 @@ namespace Aphin
 
         private void pictureBox1_MouseMove(object sender, MouseEventArgs e)
         {
-            g.Clear(Color.White);
+            
             if (mouse_Down)
             {
+                if(!radioButton3.Checked)
+                g.Clear(Color.White);
                 this.X1 = Math.Min(pictureBox1.Width - 1, Math.Max(e.X, 1));
                 this.Y1 = Math.Min(pictureBox1.Height - 1, Math.Max(e.Y, 1));
 
@@ -203,7 +205,7 @@ namespace Aphin
             else
             if (xtemp1 + xtemp0 < ytemp1 + ytemp0)
             {
-              // ytemp1 = ytemp0 + Math.Abs(xtemp1 - xtemp0);
+                // ytemp1 = ytemp0 + Math.Abs(xtemp1 - xtemp0);
             }
 
             //if(xtemp1>xtemp0 && ytemp1>xtemp0)
@@ -243,7 +245,7 @@ namespace Aphin
                 X1 = res2[0, 0];
                 Y0 = res1[0, 1];
                 Y1 = res2[0, 1];
-                
+
                 X1 = Math.Min(pictureBox1.Width - 1, Math.Max(X1, 1));
                 Y1 = Math.Min(pictureBox1.Height - 1, Math.Max(Y1, 1));
                 X0 = Math.Min(pictureBox1.Width - 1, Math.Max(X0, 1));
@@ -270,9 +272,16 @@ namespace Aphin
                 e.Handled = true;
         }
 
-        //public void Offset()
-        //{
+        private void textBox3_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            char number = e.KeyChar;
+            if (!(Char.IsDigit(number) || number == '-' || char.IsControl(number)))
+                e.Handled = true;
+        }
 
-        //}
+        private void button3_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }
