@@ -94,6 +94,12 @@ namespace Aphin
         int X1 = 0;
         int Y1 = 0;
 
+        int X2 = 0;
+        int Y2 = 0;
+
+        int X3 = 0;
+        int Y3 = 0;
+
         static Bitmap bmp = new Bitmap(927, 706);
 
         bool mouse_Down = false;
@@ -214,7 +220,10 @@ namespace Aphin
             Line_Bres(xtemp0, ytemp1, xtemp1, ytemp1);
             Line_Bres(xtemp0, ytemp0, xtemp1, ytemp0);
             Line_Bres(xtemp1, ytemp0, xtemp1, ytemp1);
-
+            X2 = xtemp0;
+            Y2 = ytemp1;
+            X3 = xtemp1;
+            Y3 = ytemp0;
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -289,6 +298,8 @@ namespace Aphin
 
             Matrix matr = new Matrix(1, 3, X0, Y0, 1);
             Matrix matr2 = new Matrix(1, 3, X1, Y1, 1);
+            Matrix matr3 = new Matrix(1, 3, X2, Y2, 1);
+            Matrix matr4 = new Matrix(1, 3, X3, Y3, 1);
 
             int x_centr = X1 - (X1 - X0) / 2;
             int y_centr = Y1 - (Y1 - Y0) / 2;
@@ -298,24 +309,107 @@ namespace Aphin
 
             var res1 = matr * offset;
             var res2 = matr2 * offset;
+            var res3 = matr3 * offset;
+            var res4 = matr4 * offset;
             if (!(res1[0, 0] > pictureBox1.Width - 1 || res1[0, 0] < 1 || res2[0, 0] > pictureBox1.Width - 1 || res2[0, 0] < 1 || res1[0, 1] > pictureBox1.Height - 1 || res1[0, 1] < 1 || res2[0, 1] > pictureBox1.Height - 1 || res2[0, 1] < 1))
             {
                 X0 = (int)res1[0, 0];
                 X1 = (int)res2[0, 0];
                 Y0 = (int)res1[0, 1];
                 Y1 = (int)res2[0, 1];
+                X2 = (int)res3[0, 0];
+                Y2 = (int)res3[0, 1];
+                X3 = (int)res4[0, 0];
+                Y3 = (int)res4[0, 1];
 
                 X1 = Math.Min(pictureBox1.Width - 1, Math.Max(X1, 1));
                 Y1 = Math.Min(pictureBox1.Height - 1, Math.Max(Y1, 1));
                 X0 = Math.Min(pictureBox1.Width - 1, Math.Max(X0, 1));
                 Y0 = Math.Min(pictureBox1.Height - 1, Math.Max(Y0, 1));
+                X2 = Math.Min(pictureBox1.Width - 1, Math.Max(X2, 1));
+                Y2 = Math.Min(pictureBox1.Height - 1, Math.Max(Y2, 1));
+                X3 = Math.Min(pictureBox1.Width - 1, Math.Max(X3, 1));
+                Y3 = Math.Min(pictureBox1.Height - 1, Math.Max(Y3, 1));
             }
 
             if (radioButton1.Checked)
                 Line_Bres(X0, Y0, X1, Y1);
             else
-               if (radioButton2.Checked)
-                Draw_square(X0, Y0, X1, Y1);
+            if (radioButton2.Checked)
+            {
+                Line_Bres(X0, Y0, X2, Y2);
+                Line_Bres(X2, Y2, X1, Y1);
+                Line_Bres(X1, Y1, X3, Y3);
+                Line_Bres(X3, Y3, X0, Y0);
+            }
+        }
+
+        private void textBox4_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            char number = e.KeyChar;
+            if ((e.KeyChar <= 47 || e.KeyChar >= 58) && number != 8 && (e.KeyChar <= 39 || e.KeyChar >= 46) && number != 47 && number != 61) //калькулятор
+                e.Handled = true;
+        }
+
+        private void textBox5_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            char number = e.KeyChar;
+            if ((e.KeyChar <= 47 || e.KeyChar >= 58) && number != 8 && (e.KeyChar <= 39 || e.KeyChar >= 46) && number != 47 && number != 61) //калькулятор
+                e.Handled = true;
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            g.Clear(Color.White);
+            double alpha = double.Parse(textBox4.Text);
+            double beta = double.Parse(textBox5.Text);
+
+            int x_centr = X1 - (X1 - X0) / 2;
+            int y_centr = Y1 - (Y1 - Y0) / 2;
+
+            Matrix matr = new Matrix(1, 3, X0, Y0, 1);
+            Matrix matr2 = new Matrix(1, 3, X1, Y1, 1);
+            Matrix matr3 = new Matrix(1, 3, X2, Y2, 1);
+            Matrix matr4 = new Matrix(1, 3, X3, Y3, 1);
+
+            Matrix offset = new Matrix(3, 3);
+            offset[0, 0] = alpha; offset[0, 1] = 0; offset[0, 2] = 0; offset[1, 0] = 0; offset[1, 1] = beta; offset[1, 2] = 0; offset[2, 0] = (1-alpha)*x_centr; offset[2, 1] = (1-beta)*y_centr; offset[2, 2] = 1;
+
+            var res1 = matr * offset;
+            var res2 = matr2 * offset;
+            var res3 = matr3 * offset;
+            var res4 = matr4 * offset;
+            if (!(res1[0, 0] > pictureBox1.Width - 1 || res1[0, 0] < 1 || res2[0, 0] > pictureBox1.Width - 1 || res2[0, 0] < 1 || res1[0, 1] > pictureBox1.Height - 1 || res1[0, 1] < 1 || res2[0, 1] > pictureBox1.Height - 1 || res2[0, 1] < 1))
+            {
+                X0 = (int)res1[0, 0];
+                X1 = (int)res2[0, 0];
+                Y0 = (int)res1[0, 1];
+                Y1 = (int)res2[0, 1];
+                X2 = (int)res3[0, 0];
+                Y2 = (int)res3[0, 1];
+                X3 = (int)res4[0, 0];
+                Y3 = (int)res4[0, 1];
+
+                X1 = Math.Min(pictureBox1.Width - 1, Math.Max(X1, 1));
+                Y1 = Math.Min(pictureBox1.Height - 1, Math.Max(Y1, 1));
+                X0 = Math.Min(pictureBox1.Width - 1, Math.Max(X0, 1));
+                Y0 = Math.Min(pictureBox1.Height - 1, Math.Max(Y0, 1));
+                X2 = Math.Min(pictureBox1.Width - 1, Math.Max(X2, 1));
+                Y2 = Math.Min(pictureBox1.Height - 1, Math.Max(Y2, 1));
+                X3 = Math.Min(pictureBox1.Width - 1, Math.Max(X3, 1));
+                Y3 = Math.Min(pictureBox1.Height - 1, Math.Max(Y3, 1));
+            }
+
+            if (radioButton1.Checked)
+                Line_Bres(X0, Y0, X1, Y1);
+            else
+            if (radioButton2.Checked)
+            {
+                Line_Bres(X0, Y0, X2, Y2);
+                Line_Bres(X2, Y2, X1, Y1);
+                Line_Bres(X1, Y1, X3, Y3);
+                Line_Bres(X3, Y3, X0, Y0);
+            }
         }
     }
 }
