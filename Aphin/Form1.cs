@@ -13,6 +13,11 @@ namespace Aphin
 {
     public partial class Form1 : Form
     {
+
+        int xb, yb,
+            xa, ya,
+            xo, yo;
+
         public class Matrix
         {
             private double[,] matr;
@@ -100,6 +105,9 @@ namespace Aphin
         int X3 = 0;
         int Y3 = 0;
 
+        int XPOINT = 0;
+        int YPOINT = 0;
+
         static Bitmap bmp = new Bitmap(927, 706);
 
         bool mouse_Down = false;
@@ -118,38 +126,64 @@ namespace Aphin
         {
             mouse_Down = true;
             bmp.SetPixel(e.X, e.Y, Color.Black);
-            this.X0 = e.X;
-            this.Y0 = e.Y;
+            if (radioButton1.Checked || radioButton2.Checked)
+            {
+                this.X0 = e.X;
+                this.Y0 = e.Y;
+            }
+            else
+            {
+                XPOINT = e.X;
+                YPOINT = e.Y;
+            }
+            if (radioButton1.Checked)
+            {
+                xo = e.X;
+                yo = e.Y;
+            }
+            xb = e.X - xo;
+            yb = e.Y - yo;
             pictureBox1.Image = bmp;
         }
 
         private void pictureBox1_MouseMove(object sender, MouseEventArgs e)
         {
-
             if (mouse_Down)
             {
-                if (!radioButton3.Checked)
+                if (!radioButton3.Checked )
                     g.Clear(Color.White);
                 this.X1 = Math.Min(pictureBox1.Width - 1, Math.Max(e.X, 1));
                 this.Y1 = Math.Min(pictureBox1.Height - 1, Math.Max(e.Y, 1));
-
+                
                 if (radioButton1.Checked)
+                {
                     Line_Bres(X0, Y0, X1, Y1);
+                    xa = X1 - xo;
+                    ya = Y1 - yo;
+                }
+                    
                 else
                     if (radioButton2.Checked)
-                    Draw_square(X0, Y0, X1, Y1);
+                    Draw_square(ref X0,ref  Y0,ref X1,ref Y1);
             }
-
         }
 
         private void pictureBox1_MouseUp(object sender, MouseEventArgs e)
         {
-            mouse_Down = false;
-            if (mouse_Down && radioButton1.Checked)
+            if (radioButton1.Checked)
+            {
                 Line_Bres(X0, Y0, X1, Y1);
+            }
+
+                mouse_Down = false;
+            if (mouse_Down && radioButton1.Checked)
+            {
+                Line_Bres(X0, Y0, X1, Y1);
+                
+            }
             else
                 if (mouse_Down && radioButton2.Checked)
-                Draw_square(X0, Y0, X1, Y1);
+                Draw_square(ref X0, ref Y0,ref  X1,ref Y1);
         }
 
         static void Swap(ref int x, ref int y)
@@ -197,8 +231,13 @@ namespace Aphin
             pictureBox1.Image = bmp;
         }
 
-        void Draw_square(int x0, int y0, int x1, int y1)
+        void Draw_square(ref int x0, ref int y0,ref int x1,ref int y1)
         {
+            int Divx = x1 > x0 ? x1 - x0 : x0 - x1;
+            int Divy = y1 > y0 ? y1 - y0 : y0 - y1;
+            int Div_all = Divx > Divy ? Divy : Divx;
+            x1 = x1 > x0 ? x0 + Div_all : x0 - Div_all;
+            y1 = y1 > y0 ? y0 + Div_all : y0 - Div_all;
             int xtemp0 = x0;
             int xtemp1 = x1;
             int ytemp0 = y0;
@@ -240,34 +279,49 @@ namespace Aphin
             int dy = int.Parse(textBox2.Text);
 
             Matrix matr = new Matrix(1, 3, X0, Y0, 1);
-
             Matrix matr2 = new Matrix(1, 3, X1, Y1, 1);
-
-            
+            Matrix matr3 = new Matrix(1, 3, X2, Y2, 1);
+            Matrix matr4 = new Matrix(1, 3, X3, Y3, 1);
 
             Matrix offset = new Matrix(3, 3);
             offset[0, 0] = 1; offset[0, 1] = 0; offset[0, 2] = 0; offset[1, 0] = 0; offset[1, 1] = 1; offset[1, 2] = 0; offset[2, 0] = dx; offset[2, 1] = dy; offset[2, 2] = 1;
-
+            
             var res1 = matr * offset;
             var res2 = matr2 * offset;
+            var res3 = matr3 * offset;
+            var res4 = matr4 * offset;
+
             if (!(res1[0, 0] > pictureBox1.Width - 1 || res1[0, 0] < 1 || res2[0, 0] > pictureBox1.Width - 1 || res2[0, 0] < 1 || res1[0, 1] > pictureBox1.Height - 1 || res1[0, 1] < 1 || res2[0, 1] > pictureBox1.Height - 1 || res2[0, 1] < 1))
             {
                 X0 = (int)res1[0, 0];
                 X1 = (int)res2[0, 0];
                 Y0 = (int)res1[0, 1];
                 Y1 = (int)res2[0, 1];
+                X2 = (int)res3[0, 0];
+                Y2 = (int)res3[0, 1];
+                X3 = (int)res4[0, 0];
+                Y3 = (int)res4[0, 1];
 
                 X1 = Math.Min(pictureBox1.Width - 1, Math.Max(X1, 1));
                 Y1 = Math.Min(pictureBox1.Height - 1, Math.Max(Y1, 1));
                 X0 = Math.Min(pictureBox1.Width - 1, Math.Max(X0, 1));
                 Y0 = Math.Min(pictureBox1.Height - 1, Math.Max(Y0, 1));
+                X2 = Math.Min(pictureBox1.Width - 1, Math.Max(X2, 1));
+                Y2 = Math.Min(pictureBox1.Height - 1, Math.Max(Y2, 1));
+                X3 = Math.Min(pictureBox1.Width - 1, Math.Max(X3, 1));
+                Y3 = Math.Min(pictureBox1.Height - 1, Math.Max(Y3, 1));
             }
 
             if (radioButton1.Checked)
                 Line_Bres(X0, Y0, X1, Y1);
             else
-               if (radioButton2.Checked)
-                Draw_square(X0, Y0, X1, Y1);
+            if (radioButton2.Checked)
+            {
+                Line_Bres(X0, Y0, X2, Y2);
+                Line_Bres(X2, Y2, X1, Y1);
+                Line_Bres(X1, Y1, X3, Y3);
+                Line_Bres(X3, Y3, X0, Y0);
+            }
         }
 
         private void textBox1_KeyPress(object sender, KeyPressEventArgs e)
@@ -301,9 +355,21 @@ namespace Aphin
             Matrix matr3 = new Matrix(1, 3, X2, Y2, 1);
             Matrix matr4 = new Matrix(1, 3, X3, Y3, 1);
 
-            int x_centr = X1 - (X1 - X0) / 2;
-            int y_centr = Y1 - (Y1 - Y0) / 2;
+            int x_centr = 0;
+            int y_centr = 0;
 
+            if (!radioButton3.Checked)
+            {
+                x_centr = X1 - (X1 - X0) / 2;
+                y_centr = Y1 - (Y1 - Y0) / 2;
+            }
+            else
+            {
+                x_centr = XPOINT;
+                y_centr = YPOINT;
+            }
+            //MessageBox.Show(x_centr.ToString());
+            //MessageBox.Show(y_centr.ToString());
             Matrix offset = new Matrix(3, 3);
             offset[0, 0] = Math.Cos(rad); offset[0, 1] = Math.Sin(rad); offset[0, 2] = 0; offset[1, 0] = -Math.Sin(rad); offset[1, 1] = Math.Cos(rad); offset[1, 2] = 0; offset[2, 0] = -x_centr * Math.Cos(rad) + y_centr * Math.Sin(rad) + x_centr; offset[2, 1] = -x_centr * Math.Sin(rad) - y_centr * Math.Cos(rad) + y_centr; offset[2, 2] = 1;
 
@@ -313,14 +379,16 @@ namespace Aphin
             var res4 = matr4 * offset;
             if (!(res1[0, 0] > pictureBox1.Width - 1 || res1[0, 0] < 1 || res2[0, 0] > pictureBox1.Width - 1 || res2[0, 0] < 1 || res1[0, 1] > pictureBox1.Height - 1 || res1[0, 1] < 1 || res2[0, 1] > pictureBox1.Height - 1 || res2[0, 1] < 1))
             {
-                X0 = (int)res1[0, 0];
-                X1 = (int)res2[0, 0];
-                Y0 = (int)res1[0, 1];
-                Y1 = (int)res2[0, 1];
-                X2 = (int)res3[0, 0];
-                Y2 = (int)res3[0, 1];
-                X3 = (int)res4[0, 0];
-                Y3 = (int)res4[0, 1];
+                //X0 = res1[0, 0] < (int)res1[0, 0] ?
+
+                X0 = (int)Math.Floor(res1[0, 0]);
+                X1 = (int)Math.Floor(res2[0, 0]);
+                Y0 = (int)Math.Floor(res1[0, 1]);
+                Y1 = (int)Math.Floor(res2[0, 1]);
+                X2 = (int)Math.Floor(res3[0, 0]);
+                Y2 = (int)Math.Floor(res3[0, 1]);
+                X3 = (int)Math.Floor(res4[0, 0]);
+                Y3 = (int)Math.Floor(res4[0, 1]);
 
                 X1 = Math.Min(pictureBox1.Width - 1, Math.Max(X1, 1));
                 Y1 = Math.Min(pictureBox1.Height - 1, Math.Max(Y1, 1));
@@ -342,6 +410,28 @@ namespace Aphin
                 Line_Bres(X1, Y1, X3, Y3);
                 Line_Bres(X3, Y3, X0, Y0);
             }
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label1_Click(object sender, EventArgs e)
+        {
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            if ((yb * xa - xb * ya) > 0)
+            {
+                label1.Text = "Справа";
+            }
+            if ((yb * xa - xb * ya) < 0)
+            {
+                label1.Text = "Слева";
+            }
+            
         }
 
         private void textBox4_KeyPress(object sender, KeyPressEventArgs e)
