@@ -157,8 +157,12 @@ namespace Aphin
 				xo = e.X;
 				yo = e.Y;
 			}
-			xb = e.X - xo;
-			yb = e.Y - yo;
+			if (checkBox1.Checked)
+			{
+				XPOINT = e.X;
+				XPOINT = e.Y;
+				//MessageBox.Show(xb + " " + yb);
+			}
 			pictureBox1.Image = bmp;
 		}
 
@@ -469,15 +473,19 @@ namespace Aphin
 
 		private void button5_Click(object sender, EventArgs e)
 		{
-			if ((yb * xa - xb * ya) > 0)
-			{
+			//if ((yb * xa - xb * ya) > 0)
+			//{
+			//	label1.Text = "Справа";
+			//}
+			//if ((yb * xa - xb * ya) < 0)
+			//{
+			//	label1.Text = "Слева";
+			//}
+			//if((XPOINT - X1) * (Y2-Y1)-(YPOINT-Y1)*(X2 - X1) >0)
+			if ((X1 - X0) * (YPOINT - Y0) - (Y1 - Y0) * (XPOINT - X0) > 0)
 				label1.Text = "Справа";
-			}
-			if ((yb * xa - xb * ya) < 0)
-			{
+			else
 				label1.Text = "Слева";
-			}
-
 		}
 
 		private void textBox4_KeyPress(object sender, KeyPressEventArgs e)
