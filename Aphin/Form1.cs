@@ -141,7 +141,7 @@ namespace Aphin
 					this.X0 = e.X;
 					this.Y0 = e.Y;
 				}
-				else if (checkBox1.Checked)
+				if (checkBox1.Checked)
 				{
 					XPOINT = e.X;
 					YPOINT = e.Y;
@@ -160,7 +160,7 @@ namespace Aphin
 			if (checkBox1.Checked)
 			{
 				XPOINT = e.X;
-				XPOINT = e.Y;
+				YPOINT = e.Y;
 				//MessageBox.Show(xb + " " + yb);
 			}
 			pictureBox1.Image = bmp;
@@ -177,7 +177,7 @@ namespace Aphin
 					this.X1 = Math.Min(pictureBox1.Width - 1, Math.Max(e.X, 1));
 					this.Y1 = Math.Min(pictureBox1.Height - 1, Math.Max(e.Y, 1));
 
-					if (radioButton1.Checked)
+					if (radioButton1.Checked && !checkBox1.Checked)
 					{
 						Line_Bres(X0, Y0, X1, Y1);
 						xa = X1 - xo;
@@ -185,7 +185,7 @@ namespace Aphin
 					}
 
 					else
-						if (radioButton2.Checked)
+						if (radioButton2.Checked && !checkBox1.Checked)
 						Draw_square(ref X0, ref Y0, ref X1, ref Y1);
 				}
 			}
@@ -200,18 +200,18 @@ namespace Aphin
 		{
 			if (!checkBox2.Checked)
 			{
-				if (radioButton1.Checked)
+				if (radioButton1.Checked && !checkBox1.Checked)
 				{
 					Line_Bres(X0, Y0, X1, Y1);
 				}
 
 				mouse_Down = false;
-				if (mouse_Down && radioButton1.Checked)
+				if (mouse_Down && radioButton1.Checked && !checkBox1.Checked)
 				{
 					Line_Bres(X0, Y0, X1, Y1);
 
 				}
-				else if (mouse_Down && radioButton2.Checked)
+				else if (mouse_Down && radioButton2.Checked && !checkBox1.Checked)
 					Draw_square(ref X0, ref Y0, ref X1, ref Y1);
 			}
 			else
@@ -473,20 +473,20 @@ namespace Aphin
 
 		private void button5_Click(object sender, EventArgs e)
 		{
-			//if ((yb * xa - xb * ya) > 0)
-			//{
-			//	label1.Text = "Справа";
-			//}
-			//if ((yb * xa - xb * ya) < 0)
-			//{
-			//	label1.Text = "Слева";
-			//}
-			//if((XPOINT - X1) * (Y2-Y1)-(YPOINT-Y1)*(X2 - X1) >0)
-			if ((X1 - X0) * (YPOINT - Y0) - (Y1 - Y0) * (XPOINT - X0) > 0)
-				label1.Text = "Справа";
-			else
-				label1.Text = "Слева";
-		}
+            //if ((yb * xa - xb * ya) > 0)
+            //{
+            //	label1.Text = "Справа";
+            //}
+            //if ((yb * xa - xb * ya) < 0)
+            //{
+            //	label1.Text = "Слева";
+            //}
+            //if((XPOINT - X1) * (Y2-Y1)-(YPOINT-Y1)*(X2 - X1) >0)
+            if ((X1 - X0) * (YPOINT - Y0) - (Y1 - Y0) * (XPOINT - X0) > 0)
+                label1.Text = "Справа";
+            else
+                label1.Text = "Слева";
+        }
 
 		private void textBox4_KeyPress(object sender, KeyPressEventArgs e)
 		{
@@ -508,8 +508,19 @@ namespace Aphin
 			double alpha = double.Parse(textBox4.Text);
 			double beta = double.Parse(textBox5.Text);
 
-			int x_centr = X1 - (X1 - X0) / 2;
-			int y_centr = Y1 - (Y1 - Y0) / 2;
+			int x_centr = 0;
+			int y_centr = 0;
+
+			if (!checkBox1.Checked)
+			{
+				x_centr = X1 - (X1 - X0) / 2;
+				y_centr = Y1 - (Y1 - Y0) / 2;
+			}
+			else
+			{
+				x_centr = XPOINT;
+				y_centr = YPOINT;
+			}
 
 			Matrix matr = new Matrix(1, 3, X0, Y0, 1);
 			Matrix matr2 = new Matrix(1, 3, X1, Y1, 1);
@@ -525,14 +536,14 @@ namespace Aphin
 			var res4 = matr4 * offset;
 			if (!(res1[0, 0] > pictureBox1.Width - 1 || res1[0, 0] < 1 || res2[0, 0] > pictureBox1.Width - 1 || res2[0, 0] < 1 || res1[0, 1] > pictureBox1.Height - 1 || res1[0, 1] < 1 || res2[0, 1] > pictureBox1.Height - 1 || res2[0, 1] < 1))
 			{
-				X0 = (int)res1[0, 0];
-				X1 = (int)res2[0, 0];
-				Y0 = (int)res1[0, 1];
-				Y1 = (int)res2[0, 1];
-				X2 = (int)res3[0, 0];
-				Y2 = (int)res3[0, 1];
-				X3 = (int)res4[0, 0];
-				Y3 = (int)res4[0, 1];
+				X0 = (int)Math.Floor(res1[0, 0]);
+				X1 = (int)Math.Floor(res2[0, 0]);
+				Y0 = (int)Math.Floor(res1[0, 1]);
+				Y1 = (int)Math.Floor(res2[0, 1]);
+				X2 = (int)Math.Floor(res3[0, 0]);
+				Y2 = (int)Math.Floor(res3[0, 1]);
+				X3 = (int)Math.Floor(res4[0, 0]);
+				Y3 = (int)Math.Floor(res4[0, 1]);
 
 				X1 = Math.Min(pictureBox1.Width - 1, Math.Max(X1, 1));
 				Y1 = Math.Min(pictureBox1.Height - 1, Math.Max(Y1, 1));
@@ -591,7 +602,7 @@ namespace Aphin
 
 			if (seg1_line2_end * seg1_line2_start >= 0 || seg2_line1_start * seg2_line1_end >= 0)
 				if (x1_second < x0_second || y1_second < x0_second) return false;
-						
+
 			//double u = seg1_line2_start / (seg1_line2_start - seg1_line2_end);
 			return true;
 		}
